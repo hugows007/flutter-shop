@@ -1,28 +1,14 @@
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
-import 'package:shop/providers/product.dart';
+import 'package:shop/models/cart.dart';
+import 'package:shop/models/product.dart';
 
-class CartItem {
-  final String id;
-  final String productId;
-  final String title;
-  final int quantity;
-  final double price;
 
-  CartItem({
-    @required this.id,
-    @required this.productId,
-    @required this.title,
-    @required this.quantity,
-    @required this.price,
-  });
-}
+class CartItems with ChangeNotifier {
+  Map<String, Cart> _items = {};
 
-class Cart with ChangeNotifier {
-  Map<String, CartItem> _items = {};
-
-  Map<String, CartItem> get items {
+  Map<String, Cart> get items {
     return {..._items};
   }
 
@@ -39,30 +25,22 @@ class Cart with ChangeNotifier {
     return total;
   }
 
-  bool checkItemInCart(Product product) {
-    if(_items.containsKey(product.id)){
-      return true;
-    }
-
-    return false;
-  }
-
   void addItem(Product product) {
     if (_items.containsKey(product.id)) {
       _items.update(
         product.id,
-        (value) => CartItem(
+        (value) => Cart(
           id: value.id,
           productId: product.id,
           title: value.title,
-          quantity: value.quantity,
+          quantity: value.quantity + 1,
           price: value.price,
         ),
       );
     } else {
       _items.putIfAbsent(
         product.id,
-        () => CartItem(
+        () => Cart(
           id: Random().nextDouble().toString(),
           productId: product.id,
           title: product.title,
@@ -75,12 +53,35 @@ class Cart with ChangeNotifier {
     notifyListeners();
   }
 
+  void removeSingleItem(productId) {
+    if (!_items.containsKey(productId)) {
+      return;
+    }
+
+    if (_items[productId].quantity == 1) {
+      _items.remove(productId);
+    } else {
+      _items.update(
+        productId,
+            (value) => Cart(
+          id: value.id,
+          productId: productId,
+          title: value.title,
+          quantity: value.quantity - 1,
+          price: value.price,
+        ),
+      );
+    }
+
+    notifyListeners();
+  }
+
   void removeItem(String productId) {
     _items.remove(productId);
     notifyListeners();
   }
 
-  void clear(){
+  void clear() {
     _items = {};
     notifyListeners();
   }

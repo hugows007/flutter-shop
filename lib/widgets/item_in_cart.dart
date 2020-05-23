@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shop/providers/cart.dart';
+import 'package:shop/models/cart.dart';
+import 'package:shop/providers/cart_items.dart';
 
 class ItemInCart extends StatelessWidget {
-  final CartItem cartItem;
+  final Cart cartItem;
 
   ItemInCart(this.cartItem);
 
@@ -26,8 +27,30 @@ class ItemInCart extends StatelessWidget {
         ),
       ),
       direction: DismissDirection.endToStart,
+      confirmDismiss: (_) {
+        return showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Text('Tem certeza?'),
+              content: Text('Quer remover o item do carrinho?'),
+              actions: <Widget>[
+                FlatButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(true);
+                  },
+                  child: Text('Sim'),
+                ),
+                FlatButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(false);
+                  },
+                  child: Text('Não'),
+                ),
+              ],
+            ));
+      },
       onDismissed: (_) {
-        Provider.of<Cart>(context, listen: false)
+        Provider.of<CartItems>(context, listen: false)
             .removeItem(cartItem.productId);
       },
       child: Card(
@@ -44,7 +67,8 @@ class ItemInCart extends StatelessWidget {
               ),
             ),
             title: Text(cartItem.title),
-            subtitle: Text('Total: R\$ ${cartItem.price * cartItem.quantity}'),
+            subtitle: Text(
+                'Total: R\$ ${(cartItem.price * cartItem.quantity).toStringAsFixed(2)}'),
             trailing: Text('${cartItem.quantity}x'),
           ),
         ),
