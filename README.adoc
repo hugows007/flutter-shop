@@ -1,0 +1,50 @@
+= Flutter - Aplicativo de vendas online
+
+Projeto desenvolvido e disponibilizado para fins de consultas e estudos.
+
+---
+
+=== Tecnologias
+----
+* Flutter
+* Dart
+* Firebase
+----
+
+---
+
+Este projeto possui uma tela de apresentação dos produtos, detalhe dos produtos, carrinho de compras, checkout do pedido, visualização de pedidos, gerenciamento de produtos e favoritos.
+
+=== Abordagem - Parte 1
+* *Inherited Widget*
+* *Gerênciamento de estado*
+    . Provider
+* *Mixis*
+* *ChangeNotifierProvider*
+* *Consumer*
+* *MultiProvider*
+* *Drawer*
+
+=== Abordagem - Parte 2
+* *Dialog*
+* *Snackbar*
+* *Formulário (Form)*
+* *Validação de formulário*
+
+=== Abordagem - Parte 3
+* *Integração com o Firebase*
+* *Requisições HTTP*
+    . Envio e obtenção de dados
+* *Indicador de progresso*
+* *Tratamento de erro*
+* *Future e Async/Await*
+* *Pull-To-Refresh*
+* *FutureBuilder*
+
+---
+
+Inspirado no(s) curso(s):
+
+* *Flutter e Dart - Aprenda e Construa APP iOS e Android 2020*
+- https://www.udemy.com/course/curso-flutter/[Udemy | Professor Leonardo Moura Leitao]
+
