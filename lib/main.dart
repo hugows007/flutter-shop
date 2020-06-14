@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shop/providers/auth.dart';
 import 'package:shop/providers/cart_items.dart';
 import 'package:shop/providers/orders.dart';
 import 'package:shop/providers/products.dart';
 import 'package:shop/utils/app_routes.dart';
+import 'package:shop/views/auth_home_screen.dart';
+import 'package:shop/views/auth_screen.dart';
 import 'package:shop/views/cart_screen.dart';
 import 'package:shop/views/orders_screen.dart';
 import 'package:shop/views/product_detail_screen.dart';
@@ -19,13 +22,26 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (_) => Products(),
+          create: (_) => Auth(),
+        ),
+        ChangeNotifierProxyProvider<Auth, Products>(
+          create: (_) => new Products(),
+          update: (context, auth, previousProducts) => Products(
+            auth.token,
+            auth.userId,
+            previousProducts.items,
+          ),
         ),
         ChangeNotifierProvider(
           create: (_) => CartItems(),
         ),
-        ChangeNotifierProvider(
+        ChangeNotifierProxyProvider<Auth, Orders>(
           create: (_) => Orders(),
+          update: (context, auth, previousOrder) => Orders(
+            auth.token,
+            auth.userId,
+            previousOrder.items,
+          ),
         ),
       ],
       child: MaterialApp(
@@ -37,7 +53,7 @@ class MyApp extends StatelessWidget {
         ),
         //home: ProductOverviewScreen(),
         routes: {
-          AppRoutes.HOME: (context) => ProductOverviewScreen(),
+          AppRoutes.AUTH_HOME: (context) => AuthOrHomeScreen(),
           AppRoutes.PRODUCT_DETAIL: (context) => ProductDetailScreen(),
           AppRoutes.CART: (context) => CartScreen(),
           AppRoutes.ORDERS: (context) => OrderScreen(),

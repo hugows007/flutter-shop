@@ -4,27 +4,18 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:shop/models/cart.dart';
+import 'package:shop/models/order.dart';
 import 'package:shop/providers/cart_items.dart';
 import 'package:shop/utils/constants.dart';
-
-class Order {
-  final String id;
-  final double total;
-  final List<Cart> products;
-  final DateTime date;
-
-  Order({
-    @required this.id,
-    @required this.total,
-    @required this.products,
-    @required this.date,
-  });
-}
 
 class Orders with ChangeNotifier {
   final String _baseUrl = '${Constants.BASE_API_URL}/orders';
 
   List<Order> _items = [];
+  String _token;
+  String _userId;
+
+  Orders([this._token, this._userId, this._items = const []]);
 
   List<Order> get items {
     return [..._items];
@@ -38,7 +29,7 @@ class Orders with ChangeNotifier {
     //final total = products.fold(0.0, (t, i) => t + (i.price * i.quantity));
     final date = DateTime.now();
     final response = await http.post(
-      "$_baseUrl.json",
+      "$_baseUrl/$_userId.json?auth=$_token",
       body: json.encode({
         'total': cart.totalAmount,
         'date': date.toIso8601String(),
@@ -67,7 +58,7 @@ class Orders with ChangeNotifier {
   }
 
   Future<void> loadOrders() async {
-    final response = await http.get("$_baseUrl.json");
+    final response = await http.get("$_baseUrl/$_userId.json?auth=$_token");
     Map<String, dynamic> data = json.decode(response.body);
     List<Order> loadedItems = [];
 

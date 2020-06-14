@@ -41,6 +41,14 @@ Este projeto possui uma tela de apresentação dos produtos, detalhe dos produto
 * *Pull-To-Refresh*
 * *FutureBuilder*
 
+=== Abordagem - Parte 4
+* *Autenticação de usuário*
+    . Integrado ao Firebase
+* *ProxyProvider*
+* *Logout*
+    . Logout automático e normal
+* *Login automático*
+    . Shared Preferences
 ---
 
 Inspirado no(s) curso(s):
