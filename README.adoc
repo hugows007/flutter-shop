@@ -49,6 +49,16 @@ Este projeto possui uma tela de apresentação dos produtos, detalhe dos produto
     . Logout automático e normal
 * *Login automático*
     . Shared Preferences
+
+=== Abordagem - Parte 5
+* *Animações*
+    . AnimatedBuilder
+    . AnimatedContainer
+    . Transição Hero
+    . Precarregamento de imagem
+    . Slivers
+    . Transição de telas
+
 ---
 
 Inspirado no(s) curso(s):

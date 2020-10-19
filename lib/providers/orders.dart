@@ -1,16 +1,28 @@
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:shop/models/cart.dart';
-import 'package:shop/models/order.dart';
-import 'package:shop/providers/cart_items.dart';
 import 'package:shop/utils/constants.dart';
+
+import './cart.dart';
+
+class Order {
+  final String id;
+  final double total;
+  final List<CartItem> products;
+  final DateTime date;
+
+  Order({
+    this.id,
+    this.total,
+    this.products,
+    this.date,
+  });
+}
 
 class Orders with ChangeNotifier {
   final String _baseUrl = '${Constants.BASE_API_URL}/orders';
-
   List<Order> _items = [];
   String _token;
   String _userId;
@@ -25,44 +37,11 @@ class Orders with ChangeNotifier {
     return _items.length;
   }
 
-  Future<void> addOrder(CartItems cart) async {
-    //final total = products.fold(0.0, (t, i) => t + (i.price * i.quantity));
-    final date = DateTime.now();
-    final response = await http.post(
-      "$_baseUrl/$_userId.json?auth=$_token",
-      body: json.encode({
-        'total': cart.totalAmount,
-        'date': date.toIso8601String(),
-        'products': cart.items.values
-            .map((item) => {
-                  'id': item.id,
-                  'productId': item.productId,
-                  'title': item.title,
-                  'quantity': item.quantity,
-                  'price': item.price,
-                })
-            .toList(),
-      }),
-    );
-
-    _items.insert(
-        0,
-        Order(
-          id: json.decode(response.body)['name'],
-          total: cart.totalAmount,
-          date: date,
-          products: cart.items.values.toList(),
-        ));
-
-    notifyListeners();
-  }
-
   Future<void> loadOrders() async {
+    List<Order> loadedItems = [];
     final response = await http.get("$_baseUrl/$_userId.json?auth=$_token");
     Map<String, dynamic> data = json.decode(response.body);
-    List<Order> loadedItems = [];
 
-    _items.clear();
     if (data != null) {
       data.forEach((orderId, orderData) {
         loadedItems.add(
@@ -70,17 +49,15 @@ class Orders with ChangeNotifier {
             id: orderId,
             total: orderData['total'],
             date: DateTime.parse(orderData['date']),
-            products: (orderData['products'] as List<dynamic>).map(
-              (item) {
-                return Cart(
-                  id: item['id'],
-                  price: item['price'],
-                  productId: item['productId'],
-                  quantity: item['quantity'],
-                  title: item['title'],
-                );
-              },
-            ).toList(),
+            products: (orderData['products'] as List<dynamic>).map((item) {
+              return CartItem(
+                id: item['id'],
+                price: item['price'],
+                productId: item['productId'],
+                quantity: item['quantity'],
+                title: item['title'],
+              );
+            }).toList(),
           ),
         );
       });
@@ -88,7 +65,38 @@ class Orders with ChangeNotifier {
     }
 
     _items = loadedItems.reversed.toList();
-
     return Future.value();
+  }
+
+  Future<void> addOrder(Cart cart) async {
+    final date = DateTime.now();
+    final response = await http.post(
+      "$_baseUrl/$_userId.json?auth=$_token",
+      body: json.encode({
+        'total': cart.totalAmount,
+        'date': date.toIso8601String(),
+        'products': cart.items.values
+            .map((cartItem) => {
+                  'id': cartItem.id,
+                  'productId': cartItem.productId,
+                  'title': cartItem.title,
+                  'quantity': cartItem.quantity,
+                  'price': cartItem.price,
+                })
+            .toList()
+      }),
+    );
+
+    _items.insert(
+      0,
+      Order(
+        id: json.decode(response.body)['name'],
+        total: cart.totalAmount,
+        date: date,
+        products: cart.items.values.toList(),
+      ),
+    );
+
+    notifyListeners();
   }
 }

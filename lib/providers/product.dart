@@ -21,7 +21,7 @@ class Product with ChangeNotifier {
     this.isFavorite = false,
   });
 
-  void _toggleFavorite(){
+  void _toggleFavorite() {
     isFavorite = !isFavorite;
     notifyListeners();
   }
@@ -30,17 +30,16 @@ class Product with ChangeNotifier {
     _toggleFavorite();
 
     try {
-      final String _baseUrl =
-          '${Constants.BASE_API_URL}/userFavorites/$userId/$id.json?auth=$token';
+      final url = '${Constants.BASE_API_URL}/userFavorites/$userId/$id.json?auth=$token';
       final response = await http.put(
-        _baseUrl,
+        url,
         body: json.encode(isFavorite),
       );
 
       if (response.statusCode >= 400) {
         _toggleFavorite();
       }
-    }catch(error){
+    } catch (error) {
       _toggleFavorite();
     }
   }

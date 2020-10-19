@@ -9,18 +9,12 @@ class Store {
   }
 
   static Future<void> saveMap(String key, Map<String, dynamic> value) async {
-    final prefs = await SharedPreferences.getInstance();
     saveString(key, json.encode(value));
   }
 
   static Future<String> getString(String key) async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(key);
-  }
-
-  static Future<bool> remove(String key) async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.remove(key);
   }
 
   static Future<Map<String, dynamic>> getMap(String key) async {
@@ -30,5 +24,10 @@ class Store {
     } catch (_) {
       return null;
     }
+  }
+
+  static Future<bool> remove(String key) async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.remove(key);
   }
 }
